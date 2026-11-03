@@ -90,12 +90,27 @@ void option2Menu() {
 }
 
 void option3Menu() {
+
   cout << "Enter parcel ID: ";
 
   int parcelID;
   cin >> parcelID;
 
   viewParcelDetail(parcelID);
+}
+
+void option5Menu() {
+  string parcelID;
+  cout << "Enter Parcel ID to update: " << endl;
+  cin >> parcelID;
+  updateParcel(parcelID);
+}
+
+void option6Menu() {
+  string parcelID;
+  cout << "Enter Parcel ID to delete: " << endl;
+  cin >> parcelID;
+  removeParcel(parcelID);
 }
 
 void menu() {
@@ -141,6 +156,7 @@ void menu() {
     }
 
     case 5: {
+      option5Menu();
       break;
     }
 

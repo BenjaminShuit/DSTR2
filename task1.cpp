@@ -40,12 +40,10 @@ Queue *allQueue[] = {&normalParcels, &toBeCollectParcel, &toBeDelivered,
 
 Parcel result[MAX];
 
-bool isFull(Queue queue) { return queue.rear == MAX - 1; }
-bool isEmpty(Queue queue) {
-  return queue.front == -1 || queue.front > queue.rear;
-}
+bool isFull(Queue queue) { return queue.count == MAX; }
+bool isEmpty(Queue queue) { return queue.count == 0; }
 
-void enqueue(Parcel parcel, Queue queue) {
+void enqueue(Parcel parcel, Queue &queue) {
   if (isFull(queue)) {
     cout << "Max number of parcel reached. (500 parcels)" << endl;
     return;
@@ -60,18 +58,67 @@ void enqueue(Parcel parcel, Queue queue) {
   cout << "Added parcel into queue" << endl;
 }
 
-void dequeue(Queue queue) {
+void dequeue(Queue &queue) {
   if (isEmpty(queue)) {
-    cout << "Queue is Empty! No customers to serve.\n";
+    cout << "Queue is Empty! No customers to serve." << endl;
     return;
   }
   cout << "Parcel " << queue.parcels[queue.front].parcelID
-       << " is being served.\n";
+       << " is being served." << endl;
   queue.count--;
   if (queue.front == queue.rear) {
     queue.front = queue.rear = -1;
   } else {
     queue.front = (queue.front + 1) % MAX;
+  }
+}
+
+void removeParcel(Queue &queue, string parcelID) {
+  if (isEmpty(queue)) {
+    cout << "Queue is Empty! Unable to remove parcel." << endl;
+    return;
+  }
+
+  try {
+    stoi(parcelID);
+  } catch (exception e) {
+    cerr << "Error converting parcel ID to integer" << endl;
+    return;
+  }
+
+  bool foundIndex = false;
+  for (int i = queue.front;; i = (i + 1) % MAX) {
+    if (!foundIndex) {
+      if (queue.parcels[i].parcelID == stoi(parcelID)) {
+        queue.parcels[i] = Parcel{};
+        queue.count--;
+        foundIndex = true;
+
+        // Shift forward
+        int current = i;
+        while (current != queue.rear) {
+          int next = (current + 1) % MAX;
+          queue.parcels[current] = queue.parcels[next];
+          current = next;
+        }
+        queue.parcels[queue.rear] = Parcel{};
+
+        if (queue.front == queue.rear) {
+          queue.front = queue.rear = -1;
+        } else {
+          queue.front = (queue.front + 1) % MAX;
+        }
+
+        queue.count--;
+        break;
+      }
+    }
+    if (i == queue.rear) {
+      break;
+    }
+  }
+  if (!foundIndex) {
+    cout << "Parcel not found!" << endl;
   }
 }
 
@@ -139,8 +186,12 @@ void displayAllParcel(Queue queue) {
 
   cout << string(125, '-') << endl;
 
-  for (int i = queue.front; i <= queue.rear; i++) {
+  int i = queue.front;
+
+  for (int count = 0; count < queue.count; count++) {
     printParcel(queue.parcels[i]);
+
+    i = (i + 1) % MAX;
   }
 }
 
@@ -150,7 +201,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
   int count = 0;
   switch (field) {
   case 1:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         int parcelID;
@@ -169,7 +220,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
     }
     break;
   case 2:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         if (currentLoopParcel.recipientID == searchTerm) {
@@ -180,7 +231,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
     }
     break;
   case 3:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         if (currentLoopParcel.recipientName == searchTerm) {
@@ -191,7 +242,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
     }
     break;
   case 4:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         if (currentLoopParcel.deliveryCompany == searchTerm) {
@@ -203,7 +254,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
     break;
 
   case 5:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         if (currentLoopParcel.parcelType == searchTerm) {
@@ -214,7 +265,7 @@ void searchAllMatchingParcel(string searchTerm, int field) {
     }
     break;
   case 6:
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
         if (currentLoopParcel.status == searchTerm) {
@@ -340,6 +391,8 @@ Parcel *searchSpecificParcel(string parcelID) {
       }
     }
   }
+
+  cout << "No parcel with parcel ID: " << parcelID << " found" << endl;
   return found;
 }
 
@@ -388,7 +441,11 @@ void updateParcel(string parcelID) {
 }
 
 // TODO:
-void removeParcel(string parcelID) {}
+void removeParcel(string parcelID) {
+  Parcel *parcelToBeRemoved;
+
+  parcelToBeRemoved = searchSpecificParcel(parcelID);
+}
 
 // Question 5
 //  Integrate within the whole task1 so no need implementation
