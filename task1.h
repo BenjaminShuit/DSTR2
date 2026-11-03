@@ -21,6 +21,8 @@ void registerNewParcel(string recipientName, string recipientID,
 
 void displayAllParcel();
 
-void searchForParcel(string searchTerm, int field);
+void searchAllMatchingParcel(string searchTerm, int field);
 void viewParcelDetail(int parcelID);
+
+void processParcel();
 #endif

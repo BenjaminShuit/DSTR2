@@ -15,6 +15,9 @@ void menu() {
     // question 2
     cout << "2. Search Parcel" << endl;
     cout << "3. View Parcel Detail" << endl;
+    cout << "4. Sort & Process Incoming Parcel " << endl;
+    // TODO: havent do 5
+    cout << "5. Update Parcel Record " << endl;
     cout << "0. Exit" << endl;
 
     int selection;
@@ -26,17 +29,18 @@ void menu() {
       displayAllParcel();
       break;
 
-      // Search parcel
+      // Search parcel (question 2)
     case 2: {
       int searchSelection;
 
       while (true) {
         cout << "Search By:" << endl;
-        cout << "1. Recipient ID" << endl;
-        cout << "2. Recipient Name" << endl;
-        cout << "3. Delivery Company" << endl;
-        cout << "4. Parcel Type" << endl;
-        cout << "5. Status" << endl;
+        cout << "1. Parcel ID" << endl;
+        cout << "2. Recipient ID" << endl;
+        cout << "3. Recipient Name" << endl;
+        cout << "4. Delivery Company" << endl;
+        cout << "5. Parcel Type" << endl;
+        cout << "6. Status" << endl;
         cout << "0. Back to menu" << endl;
 
         cout << "Enter selection: ";
@@ -59,25 +63,25 @@ void menu() {
 
       switch (searchSelection) {
       case 1:
-        searchForParcel(searchTerm, 1);
+        searchAllMatchingParcel(searchTerm, 1);
         break;
       case 2:
-        searchForParcel(searchTerm, 2);
+        searchAllMatchingParcel(searchTerm, 2);
         break;
       case 3:
-        searchForParcel(searchTerm, 3);
+        searchAllMatchingParcel(searchTerm, 3);
         break;
       case 4:
-        searchForParcel(searchTerm, 4);
+        searchAllMatchingParcel(searchTerm, 4);
         break;
       case 5:
-        searchForParcel(searchTerm, 5);
+        searchAllMatchingParcel(searchTerm, 5);
         break;
       }
       break;
     }
 
-    // View parcel detail
+    // View parcel detail (question 2)
     case 3: {
       cout << "Enter parcel ID: ";
 
@@ -85,6 +89,11 @@ void menu() {
       cin >> parcelID;
 
       viewParcelDetail(parcelID);
+      break;
+    }
+
+    case 4: {
+      processParcel();
       break;
     }
 

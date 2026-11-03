@@ -1,8 +1,13 @@
 #include "iostream"
+#include <algorithm>
+#include <exception>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 const int MAX = 500;
+
+int nextParcelID = 1001;
 
 class Parcel {
 public:
@@ -32,6 +37,8 @@ Queue onHoldInvestigaton;
 
 Queue *allQueue[] = {&normalParcels, &toBeCollectParcel, &toBeDelivered,
                      &onHoldInvestigaton, &returnedParcel};
+
+Parcel result[MAX];
 
 bool isFull(Queue queue) { return queue.rear == MAX - 1; }
 bool isEmpty(Queue queue) {
@@ -72,13 +79,42 @@ void dequeue(Queue queue) {
 void registerNewParcel(string recipientName, string recipientID,
                        string deliveryCompany, string parcelType,
                        string arrivalDateTime, string status) {
+  // Q5 validation
+  // TODO: verify the data instead of just empty value
+  if (recipientName == "") {
+    cout << "Invalid Recipient Name" << endl;
+    return;
+  }
+  if (deliveryCompany == "") {
+    cout << "Invalid Delivery Company" << endl;
+    return;
+  }
+  if (recipientID == "") {
+    cout << "Invalid Recipient ID" << endl;
+    return;
+  }
+  if (parcelType == "") {
+    cout << "Invalid Parcel Type" << endl;
+    return;
+  }
+  if (arrivalDateTime == "") {
+    cout << "Invalid Arrival Date Time" << endl;
+    return;
+  }
+  if (status == "") {
+    cout << "Invalid Parcel Status" << endl;
+    return;
+  }
+
   Parcel parcelToBeAdd;
+  parcelToBeAdd.parcelID = nextParcelID++;
   parcelToBeAdd.recipientName = recipientName;
   parcelToBeAdd.recipientID = recipientID;
   parcelToBeAdd.deliveryCompany = deliveryCompany;
   parcelToBeAdd.parcelType = parcelType;
   enqueue(parcelToBeAdd, normalParcels);
-  // FIXME: need to check for duplicate, but how
+  cout << "Parcel added with Parcel ID: " << parcelToBeAdd.parcelID << endl;
+  // FIXME: impossible for id duplicate
 }
 
 void serveParcel(Queue queue) { dequeue(queue); }
@@ -108,11 +144,31 @@ void displayAllParcel(Queue queue) {
   }
 }
 
-void searchForParcel(string searchTerm, int field) {
-  Parcel result[MAX];
+// FIXME: create another function to store the real parcel, this function only
+// save the all the matching result to the array.
+void searchAllMatchingParcel(string searchTerm, int field) {
   int count = 0;
   switch (field) {
   case 1:
+    for (int i = 0; i < 6; i++) {
+      for (int j = 0; j < allQueue[i]->count; j++) {
+        Parcel currentLoopParcel = allQueue[i]->parcels[j];
+        int parcelID;
+        try {
+          parcelID = stoi(searchTerm);
+        } catch (exception e) {
+          cerr << "Error while attempting to convert search term to parcel ID"
+               << endl;
+          return;
+        }
+        if (currentLoopParcel.parcelID == parcelID) {
+          result[count] = currentLoopParcel;
+          i++;
+        }
+      }
+    }
+    break;
+  case 2:
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
@@ -122,7 +178,8 @@ void searchForParcel(string searchTerm, int field) {
         }
       }
     }
-  case 2:
+    break;
+  case 3:
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
@@ -132,7 +189,8 @@ void searchForParcel(string searchTerm, int field) {
         }
       }
     }
-  case 3:
+    break;
+  case 4:
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
@@ -142,7 +200,9 @@ void searchForParcel(string searchTerm, int field) {
         }
       }
     }
-  case 4:
+    break;
+
+  case 5:
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
@@ -152,7 +212,8 @@ void searchForParcel(string searchTerm, int field) {
         }
       }
     }
-  case 5:
+    break;
+  case 6:
     for (int i = 0; i < 6; i++) {
       for (int j = 0; j < allQueue[i]->count; j++) {
         Parcel currentLoopParcel = allQueue[i]->parcels[j];
@@ -162,10 +223,13 @@ void searchForParcel(string searchTerm, int field) {
         }
       }
     }
+    break;
 
   default:
     cout << "Invalid search term" << endl;
   }
+
+  // NOTE: the return result is in result[]
 }
 
 void viewParcelDetail(int parcelID) {
@@ -254,3 +318,70 @@ void processParcel() {
     return;
   }
 }
+
+// Question 4
+// TODO: verify the pointer thing
+Parcel *searchSpecificParcel(string parcelID) {
+  Parcel *found;
+  int parcelIDint;
+  try {
+    parcelIDint = stoi(parcelID);
+  } catch (exception e) {
+    cerr << "Error while attempting to convert search term to parcel ID"
+         << endl;
+    return found;
+  }
+
+  for (int i = 0; i < 6; i++) {
+    for (int j = 0; j < allQueue[i]->count; j++) {
+      Parcel *currentLoopParcel = &allQueue[i]->parcels[j];
+      if (currentLoopParcel->parcelID == parcelIDint) {
+        return currentLoopParcel;
+      }
+    }
+  }
+  return found;
+}
+
+void updateParcel(string parcelID) {
+  cout << "Select parcel status to update: " << endl;
+  cout << "1. Collection" << endl;
+  cout << "2. Delivery" << endl;
+  cout << "3. Return" << endl;
+  cout << "4. Cancellation" << endl;
+  cout << "0. Return to main menu" << endl;
+
+  int selection;
+  cin >> selection;
+
+  switch (selection) {
+  case 1:
+    // NOTE: just for reference
+    // cout << "Search By:" << endl;
+    // cout << "1. Parcel ID" << endl;
+    // cout << "2. Recipient ID" << endl;
+    // cout << "3. Recipient Name" << endl;
+    // cout << "4. Delivery Company" << endl;
+    // cout << "5. Parcel Type" << endl;
+    // cout << "6. Status" << endl;
+    // cout << "0. Back to menu" << endl;
+
+    // Clear result
+    fill(result, result + MAX, Parcel{});
+    Parcel *tobeModify;
+    tobeModify = searchSpecificParcel(parcelID);
+    tobeModify->status="Collection";
+    cout << "Successfully update status of " << parcelID << endl;
+    break;
+  case 5:
+  default:
+    cout << "Invalid selection, returning to main menu" << endl;
+    return;
+  }
+}
+
+// TODO:
+void removeParcel() {}
+
+// Question 5
+//  Integrate within the whole task1 so no need implementation
