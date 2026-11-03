@@ -80,7 +80,7 @@ void registerNewParcel(string recipientName, string recipientID,
                        string deliveryCompany, string parcelType,
                        string arrivalDateTime, string status) {
   // Q5 validation
-  // TODO: verify the data instead of just empty value
+  // TODO: verify the data if exist or smtg instead of just empty value
   if (recipientName == "") {
     cout << "Invalid Recipient Name" << endl;
     return;
@@ -347,33 +347,40 @@ void updateParcel(string parcelID) {
   cout << "Select parcel status to update: " << endl;
   cout << "1. Collection" << endl;
   cout << "2. Delivery" << endl;
-  cout << "3. Return" << endl;
-  cout << "4. Cancellation" << endl;
+  cout << "3. Special Handling" << endl;
+  cout << "4. On Hold" << endl;
+  cout << "5. Return" << endl;
+  cout << "6. Cancellation" << endl;
   cout << "0. Return to main menu" << endl;
 
   int selection;
   cin >> selection;
 
+  Parcel *tobeModify;
   switch (selection) {
   case 1:
-    // NOTE: just for reference
-    // cout << "Search By:" << endl;
-    // cout << "1. Parcel ID" << endl;
-    // cout << "2. Recipient ID" << endl;
-    // cout << "3. Recipient Name" << endl;
-    // cout << "4. Delivery Company" << endl;
-    // cout << "5. Parcel Type" << endl;
-    // cout << "6. Status" << endl;
-    // cout << "0. Back to menu" << endl;
-
-    // Clear result
-    fill(result, result + MAX, Parcel{});
-    Parcel *tobeModify;
     tobeModify = searchSpecificParcel(parcelID);
-    tobeModify->status="Collection";
+    tobeModify->status = "Collection";
     cout << "Successfully update status of " << parcelID << endl;
     break;
-  case 5:
+
+  case 2:
+    tobeModify = searchSpecificParcel(parcelID);
+    tobeModify->status = "Delivery";
+    cout << "Successfully update status of " << parcelID << endl;
+    break;
+
+  case 3:
+    tobeModify = searchSpecificParcel(parcelID);
+    tobeModify->status = "Return";
+    cout << "Successfully update status of " << parcelID << endl;
+    break;
+  case 4:
+    tobeModify = searchSpecificParcel(parcelID);
+    tobeModify->status = "Cancellation";
+    cout << "Successfully update status of " << parcelID << endl;
+    break;
+
   default:
     cout << "Invalid selection, returning to main menu" << endl;
     return;
@@ -381,7 +388,7 @@ void updateParcel(string parcelID) {
 }
 
 // TODO:
-void removeParcel() {}
+void removeParcel(string parcelID) {}
 
 // Question 5
 //  Integrate within the whole task1 so no need implementation

@@ -14,5 +14,7 @@ string status;
 
 1. Collection
 2. Delivery
-3. Return
-4. Cancellation
+3. Special Handling
+4. On Hold
+5. Return
+6. Cancellation
