@@ -81,19 +81,18 @@ void option3Menu() {
 
 void option5Menu() {
   string parcelID;
-  cout << "Enter Parcel ID to update: ";
+  cout << "Enter Parcel ID to update: " << endl;
   cin >> parcelID;
   updateParcel(parcelID);
 }
 
 void option6Menu() {
   string parcelID;
-  cout << "Enter Parcel ID to delete: ";
+  cout << "Enter Parcel ID to delete: " << endl;
   cin >> parcelID;
   removeParcel(parcelID);
 }
 
-// Task 2 - Requirement 1 Menu Integration
 void option7Menu() {
   cout << string(50, '-') << endl;
   cout << "Create Service Request" << endl;
@@ -104,7 +103,7 @@ void option7Menu() {
 
   cout << "Enter Target Parcel ID: ";
   cin >> parcelID;
-  cin.ignore(); // Clear newline buffer
+  cin.ignore(); 
 
   cout << "Select Service Type:\n";
   cout << "1. Campus Delivery\n";
@@ -131,11 +130,9 @@ void option7Menu() {
   cout << "Enter Request Date/Time (e.g. 2026-11-05 10:00): ";
   getline(cin, requestDateTime);
 
-  // Calls Task 2 Requirement 1 function
   createServiceRequest(parcelID, serviceType, priorityLevel, requestDateTime);
 }
 
-// Quick sample data register for testing
 void seedInitialData() {
   registerNewParcel("Alice Tan", "TP012345", "DHL", "Box", "2026-11-05 08:00", "Received");
   registerNewParcel("Bob Lee", "TP067890", "FedEx", "Document", "2026-11-05 08:30", "Received");
@@ -150,10 +147,13 @@ void menu() {
     cout << setw(12) << " " << "Main Menu" << endl;
     cout << string(35, '=') << endl;
 
+    //question 1 
     cout << "1. Display All Parcels" << endl;
+    //question 2
     cout << "2. Search Parcel" << endl;
     cout << "3. View Parcel Detail" << endl;
     cout << "4. Sort & Process Incoming Parcel" << endl;
+    // TODO: havent do 5
     cout << "5. Update Parcel Record" << endl;
     cout << "6. Delete Parcel Record" << endl;
     cout << "7. [Task 2] Create Service Request" << endl;
@@ -194,7 +194,4 @@ void menu() {
   }
 }
 
-int main() {
-  menu();
-  return 0;
-}
+int main() { menu();}
